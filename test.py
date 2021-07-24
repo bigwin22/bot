@@ -4,10 +4,13 @@ from datetime import datetime
 from discord.ext import commands
 import requests
 import json
+import os
 
 ##학교코드:7041189
 
 client = commands.Bot(command_prefix='!')
+F = False
+T = True
 
 print(datetime.today())
 
@@ -24,21 +27,19 @@ async def on_ready():
     print("================")
 
 
-def four(n):
-    if (len(str(n)) == 4):
-        return 4
-    return 0
-
-
 def getcode(name):
     url = "https://schoolmenukr.ml/code/api?q=" + name
     response = requests.get(url)
     school_infos = json.loads(response.text)
     code = [info['code'] for info in school_infos['school_infos']]
-    val = ''
-    for a in code:
-        val += a
-    return val
+    return code
+def getadd(name):
+    url = "https://schoolmenukr.ml/code/api?q=" + name
+    response = requests.get(url)
+    school_infos = json.loads(response.text)
+    add = [info['address'] for info in school_infos['school_infos']]
+    return add
+
 
 def setname(name):
     em = list(name)
@@ -80,53 +81,121 @@ def getfood(ty,code,when, year,month,day):
 def printf(title, year, month, day):
     return discord.Embed(title=title,description=year+' '+month+' '+day,color=0x62c1cc)
 
+
+work = []
+aliases = []
+
+author = []
+
+name = []
+code = []
+ty = []
+
+
+##
+@client.command()
+async def test(ctx, val):
+    arr = [work,aliases,name,code,ty,author,author.index(ctx.author)]
+    await ctx.channel.send(arr[int(val)-1][author.index(ctx.author)])
+    await ctx.channel.send(type(arr[int(val)-1][author.index(ctx.author)]))
+
+@client.command(aliases = [''])
+async def pick(ctx, val):
+    global work, choice, aliases
+    global code
+    if ((int(val) in aliases[author.index(ctx.author)]) and work[author.index(ctx.author)] == T and (ctx.author==author[author.index(ctx.author)])):
+        await ctx.channel.purge(limit=len(code[author.index(ctx.author)])+2)
+        work[author.index(ctx.author)] = F
+        aliases[author.index(ctx.author)] = []
+        code[author.index(ctx.author)] = code[author.index(ctx.author)][int(val)-1]
+
+
+
+
 # 봇이 특정 메세지를 받고 인식하는 코드
 @client.command()
 async def 급식(ctx, *val):
+    global work, choice ,aliases, author
+    global name, code, ty
+
+    name.append(None), code.append(None), ty.append(None), work.append(None),aliases.append(None)
+    author.append(ctx.author)
+
+    await ctx.channel.send("처리 중입니다..............")
+
     date = datetime.now()
-
-    name = ''
-    code = ''
-    type = ''
-
-    breakfast = 2
-    lunch = 3
-    dinner = 4
-
+    print("입력됨", ctx, val)
     embed = 0
+    store = []
+
+    def pro(a, b, c):
+        for i in range(3):
+            store.append(getfood(ty[author.index(ctx.author)], code[author.index(ctx.author)], when[i], a, b, c))
+        f = open(str(ctx.author) + ".gf",'w')
+        f.write(name[author.index(ctx.author)])
+        f.close()
 
     try:
-        name = setname(val[0])
-        code = getcode(name)
-        ty = gettype(name)
+        if (len(val) == 0):
+            print(1)
+            if (os.path.isfile(str(ctx.author) + ".gf")):
+                print(1)
+
+                f = open(str(ctx.author) + ".gf", 'r')
+                x = f.readline()
+                name[author.index(ctx.author)] = setname(x)
+            else:
+                print(2)
+                await ctx.channel.send("마지막으로 입력된 학교가 없습니다")
+                return
+
+        elif (len(val) > 0):
+            name[author.index(ctx.author)] = setname(val[0])
+        code[author.index(ctx.author)] = getcode(name[author.index(ctx.author)])
+        print(code[author.index(ctx.author)], len(code[author.index(ctx.author)]))##
+        if (len(code[author.index(ctx.author)]) > 1):
+            aliases[author.index(ctx.author)] = []
+            add = getadd(name[author.index(ctx.author)])
+            work[author.index(ctx.author)] = T
+
+            for i in range(len(add)):
+                aliases[author.index(ctx.author)].append(i+1)
+                await ctx.channel.send("```"+str(i+1)+":"+add[i]+"```")
+            await ctx.channel.send("(!+번호)로 입력해주세요 ``예: ! 1``")
+            await asyncio.sleep(5)
+        else:
+            code[author.index(ctx.author)] = code[author.index(ctx.author)][0]
+
+        ty[author.index(ctx.author)] = gettype(name[author.index(ctx.author)])
+
+        when = ['breakfast','lunch','dinner']
+
         try:
             if (len(val) == 4):
-                breakfast = getfood(ty, code, 'breakfast', val[1], val[2], val[3])
-                lunch = getfood(ty, code, 'lunch', val[1], val[2], val[3])
-                dinner = getfood(ty, code, 'dinner', val[1], val[2], val[3])
-                embed = printf(val[0],val[1],val[2],val[3])
+                pro(val[1],val[2],val[3])
+                embed = printf(name[author.index(ctx.author)],val[1],val[2],val[3])
             elif (len(val) == 3):
-                breakfast = getfood(ty, code, 'breakfast', str(date.year), val[1], val[2])
-                lunch = getfood(ty, code, 'lunch', str(date.year), val[1], val[2])
-                dinner = getfood(ty, code, 'dinner', str(date.year), val[1], val[2])
-                embed = printf(val[0],str(date.year),val[1],val[2])
-            if (len(val) == 1):
-                breakfast = getfood(ty, code, 'breakfast', str(date.year), str(date.month), str(date.day))
-                lunch = getfood(ty, code, 'lunch', str(date.year), str(date.month), str(date.day))
-                dinner = getfood(ty, code, 'dinner', str(date.year), str(date.month), str(date.day))
-                embed = printf(val[0],str(date.year),str(date.month),str(date.day))
+                pro(str(date.year),val[1],val[2])
+                embed = printf(name[author.index(ctx.author)],str(date.year),val[1],val[2])
+            elif (len(val) == 1 or len(val) == 0):
+                pro(str(date.year),str(date.month),str(date.day))
+                embed = printf(name[author.index(ctx.author)],str(date.year),str(date.month),str(date.day))
         except:
             await ctx.channel.send("제대로 입력해주세요")
     except:
         await ctx.channel.send("학교 이름을 제대로 입력해주세요")
 
-    embed.add_field(name="아침", value=breakfast,inline=False)
-    embed.add_field(name="점심", value=lunch,inline=False)
-    embed.add_field(name="저녁", value=dinner,inline=False)
+    when = ["아침", "점심", "저녁"]
+    for i in range(3):
+        embed.add_field(name=when[i],value=store[i],inline=False)
     embed.set_footer(text="이상입니다")
+
+    await ctx.channel.purge(limit=1)
     await ctx.channel.send(embed=embed)
 
+    del work[author.index(ctx.author)],aliases[author.index(ctx.author)], name[author.index(ctx.author)],code[author.index(ctx.author)],ty[author.index(ctx.author)]
+    del author[author.index(ctx.author)]
 
-'''async def 타이머(ctx, *text):'''
+
 
 client.run(token)
