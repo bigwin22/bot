@@ -227,4 +227,4 @@ async def 급식(ctx, *val):
 
 
 
-client.run(token) 
+client.run(token)
