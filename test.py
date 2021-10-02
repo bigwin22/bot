@@ -189,7 +189,7 @@ async def 급식(ctx, *val):
             else:
                 for i in range(len(a)):
                     await a[i].delete()
-                await b.delete()
+                await b.delete( )
                 await msg.delete()
         else:
             code[author.index(ctx.author)] = code[author.index(ctx.author)][0]
