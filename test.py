@@ -15,7 +15,7 @@ T = True
 print(datetime.today())
 
 # 생성된 토큰을 입력해준다.
-token = "NzczNDQzMjI1NDI3NjQwMzIw.X6JTIg.Ebjq6ThJUXCck6kSaIEhMQd9VW8"
+token = "NzczNDQzMjI1NDI3NjQwMzIw.X6JTIg.-RPsiocdBvZslvOvWX0PqXVX5G8"
 
 
 # 봇이 구동되었을 때 보여지는 코드
@@ -189,7 +189,7 @@ async def 급식(ctx, *val):
             else:
                 for i in range(len(a)):
                     await a[i].delete()
-                await b.delete( )
+                await b.delete()
                 await msg.delete()
         else:
             code[author.index(ctx.author)] = code[author.index(ctx.author)][0]
