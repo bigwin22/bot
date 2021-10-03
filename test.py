@@ -218,7 +218,7 @@ async def 급식(ctx, *val):
     for i in range(3):
         embed.add_field(name=when[i],value=store[i],inline=False)
     embed.set_author(name=ctx.name,icon_url=ctx.author.avatar_url)    
-    embed.set_footer(text="이상입니다")
+    embed.set_footer(text="이상입니다") 
 
     await p.delete()
 
