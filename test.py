@@ -217,9 +217,11 @@ async def 급식(ctx, *val):
     when = ["아침", "점심", "저녁"]
     for i in range(3):
         embed.add_field(name=when[i],value=store[i],inline=False)
+    embed.set_author(name="작성자의 이름",icon_url=message.author.avatar_url)    
     embed.set_footer(text="이상입니다")
 
     await p.delete()
+
     await ctx.channel.send(embed=embed)
 
     del work[author.index(ctx.author)],aliases[author.index(ctx.author)], name[author.index(ctx.author)],code[author.index(ctx.author)],ty[author.index(ctx.author)]
