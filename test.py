@@ -225,7 +225,7 @@ async def 급식(ctx, *val):
     await ctx.channel.send(embed=embed)
 
     del work[author.index(ctx.author)],aliases[author.index(ctx.author)], name[author.index(ctx.author)],code[author.index(ctx.author)],ty[author.index(ctx.author)]
-    del author[author.index(ctx.author)]
+    del author[author.index(ctx.author)] 
 
 
 
