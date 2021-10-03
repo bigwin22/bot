@@ -217,7 +217,7 @@ async def 급식(ctx, *val):
     when = ["아침", "점심", "저녁"]
     for i in range(3):
         embed.add_field(name=when[i],value=store[i],inline=False)
-    embed.set_author(name="작성자의 이름",icon_url=ctx.author.avatar_url)    
+    embed.set_author(name=ctx.name,icon_url=ctx.author.avatar_url)    
     embed.set_footer(text="이상입니다")
 
     await p.delete()
