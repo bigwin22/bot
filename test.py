@@ -82,31 +82,14 @@ def printf(title, year, month, day):
     return discord.Embed(title=title,description=year+' '+month+' '+day,color=0x62c1cc)
 
 
-work = []
-aliases = []
-
-author = []
-
-name = []
-code = []
-ty = []
-
-
-##
-@client.command()
-async def test(ctx, val):
-    arr = [work,aliases,name,code,ty,author,author.index(ctx.author)]
-    await ctx.channel.send(arr[int(val)-1][author.index(ctx.author)])
-    await ctx.channel.send(type(arr[int(val)-1][author.index(ctx.author)]))
 
 # 봇이 특정 메세지를 받고 인식하는 코드
 @client.command()
 async def 급식(ctx, *val):
-    global work,aliases, author
-    global name, code, ty
-
-    name.append(None), code.append(None), ty.append(None), work.append(None),aliases.append(None)
-    author.append(ctx.author)
+    aliases = []
+    name = ''
+    code = []
+    ty = ''
 
     p = await ctx.channel.send("처리 중입니다..............")
 
@@ -119,16 +102,16 @@ async def 급식(ctx, *val):
 
     def pro(a, b, c):
         for i in range(3):
-            store.append(getfood(ty[author.index(ctx.author)], code[author.index(ctx.author)], when[i], a, b, c))
+            store.append(getfood(ty, code, when[i], a, b, c))
 
         os.makedirs(fpath, exist_ok=True)
 
         f = open(fpath+"/name.gf",'w')
-        f.write(name[author.index(ctx.author)])
+        f.write(name)
         f.close()
 
         f = open(fpath+"/code.gf",'w')
-        f.write(code[author.index(ctx.author)])
+        f.write(code)
         f.close()
 
 
@@ -139,13 +122,13 @@ async def 급식(ctx, *val):
 
                 f = open(fpath+"/name.gf", 'r')
                 x = f.readline()
-                name[author.index(ctx.author)] = setname(x)
+                name = setname(x)
                 f.close()
 
                 f = open(fpath+"/code.gf", 'r')
                 x = f.readline()
-                code[author.index((ctx.author))] = []
-                code[author.index((ctx.author))].append(x)
+                code = []
+                code.append(x)
                 f.close()
 
             else:
@@ -154,26 +137,26 @@ async def 급식(ctx, *val):
                 return
 
         elif (len(val) > 0):
-            name[author.index(ctx.author)] = setname(val[0])
-            code[author.index(ctx.author)] = getcode(name[author.index(ctx.author)])
+            name = setname(val[0])
+            code = getcode(name)
 
-        if (len(code[author.index(ctx.author)]) > 1):
-            aliases[author.index(ctx.author)] = []
-            add = getadd(name[author.index(ctx.author)])
-            work[author.index(ctx.author)] = T
+        if (len(code) > 1):
+            aliases = []
+            add = getadd(name)
 
             def check(message):
-                if ((int(message.content) in aliases[author.index(message.author)]) and work[author.index(ctx.author)] == T and (
-                        message.author == author[author.index(message.author)])):
-                    work[author.index(ctx.author)] = F
-                    aliases[author.index(ctx.author)] = []
-                    code[author.index(ctx.author)] = code[author.index(ctx.author)][int(message.content) - 1]
+                global aliases,name, code
+
+                if ((int(message.content) in aliases) and (
+                        message.author == ctx.author)):
+                    aliases = []
+                    code = code[int(message.content) - 1]
                     return T
                 return F
 
             a = []
             for i in range(len(add)):
-                aliases[author.index(ctx.author)].append(i+1)
+                aliases.append(i+1)
                 a.append(await ctx.channel.send("```"+str(i+1)+":"+add[i]+"```"))
             b = await ctx.channel.send("(번호)로 입력해주세요 ``예: 1``")
 
@@ -192,22 +175,22 @@ async def 급식(ctx, *val):
                 await b.delete( )
                 await msg.delete()
         else:
-            code[author.index(ctx.author)] = code[author.index(ctx.author)][0]
+            code = code[0]
 
-        ty[author.index(ctx.author)] = gettype(name[author.index(ctx.author)])
+        ty = gettype(name)
 
         when = ['breakfast','lunch','dinner']
 
         try:
             if (len(val) == 4):
                 pro(val[1],val[2],val[3])
-                embed = printf(name[author.index(ctx.author)],val[1],val[2],val[3])
+                embed = printf(name,val[1],val[2],val[3])
             elif (len(val) == 3):
                 pro(str(date.year),val[1],val[2])
-                embed = printf(name[author.index(ctx.author)],str(date.year),val[1],val[2])
+                embed = printf(name,str(date.year),val[1],val[2])
             elif (len(val) == 1 or len(val) == 0):
                 pro(str(date.year),str(date.month),str(date.day))
-                embed = printf(name[author.index(ctx.author)],str(date.year),str(date.month),str(date.day))
+                embed = printf(name,str(date.year),str(date.month),str(date.day))
 
         except:
             await ctx.channel.send("제대로 입력해주세요")
@@ -223,9 +206,6 @@ async def 급식(ctx, *val):
     await p.delete()
 
     await ctx.channel.send(embed=embed)
-
-    del work[author.index(ctx.author)],aliases[author.index(ctx.author)], name[author.index(ctx.author)],code[author.index(ctx.author)],ty[author.index(ctx.author)]
-    del author[author.index(ctx.author)] 
 
 
 
