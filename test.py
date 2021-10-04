@@ -102,7 +102,7 @@ async def test(ctx, val):
 # 봇이 특정 메세지를 받고 인식하는 코드
 @client.command()
 async def 급식(ctx, *val):
-    global work, choice ,aliases, author
+    global work,aliases, author
     global name, code, ty
 
     name.append(None), code.append(None), ty.append(None), work.append(None),aliases.append(None)
