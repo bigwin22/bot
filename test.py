@@ -106,22 +106,6 @@ async def 급식(ctx, *val):
 
     fpath = "./user/"+str(ctx.author)
 
-    def pro(a, b, c):
-        for i in range(3):
-            store.append(getfood(ty, code[0], when[i], a, b, c))
-
-        os.makedirs(fpath, exist_ok=True)
-
-        f = open(fpath+"/name.gf",'w')
-        f.write(name)
-        f.close()
-
-        f = open(fpath+"/code.gf",'w')
-        f.write(code)
-        f.close()
-
-
-
     try:
         if (len(val) == 0):
             if (os.path.isdir(fpath)):
@@ -145,6 +129,7 @@ async def 급식(ctx, *val):
         elif (len(val) > 0):
             name = setname(val[0])
             code = getcode(name)
+            
 
         if (len(code) > 1):
             aliases = []
@@ -185,19 +170,42 @@ async def 급식(ctx, *val):
             code = code[0]
 
         ty = gettype(name)
+        print(code)##
 
         when = ['breakfast','lunch','dinner']
 
         try:
+            y = 0
+            m = 0
+            d = 0
             if (len(val) == 4):
-                pro(val[1],val[2],val[3])
+                y = val[1]
+                m = val[2]
+                d = val[3]
                 embed = printf(name,val[1],val[2],val[3])
             elif (len(val) == 3):
-                pro(str(date.year),val[1],val[2])
+                y = str(date.year)
+                m = val[1]
+                d = val[2]
                 embed = printf(name,str(date.year),val[1],val[2])
             elif (len(val) == 1 or len(val) == 0):
-                pro(str(date.year),str(date.month),str(date.day))
+                y = str(date.year)
+                m = str(date.month)
+                d = str(date.day)
                 embed = printf(name,str(date.year),str(date.month),str(date.day))
+
+            for i in range(3):
+                store.append(getfood(ty, code, when[i], y, m, d))
+
+            os.makedirs(fpath, exist_ok=True)
+
+            f = open(fpath+"/name.gf",'w')
+            f.write(name)
+            f.close()
+
+            f = open(fpath+"/code.gf",'w')
+            f.write(code)
+            f.close()
 
         except:
             await ctx.channel.send("제대로 입력해주세요")
