@@ -32,14 +32,12 @@ def getcode(name):
     response = requests.get(url)
     school_infos = json.loads(response.text)
     code = [info['code'] for info in school_infos['school_infos']]
-    print("getcode",datetime.today())##
     return code
 def getadd(name):
     url = "https://schoolmenukr.ml/code/api?q=" + name
     response = requests.get(url)
     school_infos = json.loads(response.text)
     add = [info['address'] for info in school_infos['school_infos']]
-    print("getadd",datetime.today())##
     return add
 
 
@@ -54,13 +52,11 @@ def setname(name):
     em.reverse()
     if (app == ''):
         return name
-    print("setname",datetime.today())##
     return name+app
 
 def gettype(name):
     em = list(name)
     em.reverse()
-    print("gettype",datetime.today())##
     if (em[2] == '중'):
         return "middle"
     elif (em[2] == '등'):
@@ -80,11 +76,9 @@ def getfood(ty,code,when, year,month,day):
             p += x + ', '
     if (p == ''):
         return "없음"
-    print("getfood",datetime.today())##
     return p
 
 def printf(title, year, month, day):
-    print("printf",datetime.today())##
     return discord.Embed(title=title,description=year+' '+month+' '+day,color=0x62c1cc)
 
 
@@ -95,14 +89,17 @@ author = []
 # 봇이 특정 메세지를 받고 인식하는 코드
 @client.command()
 async def 급식(ctx, *val):
-    print("급식",datetime.today())##
+
+    if (ctx.author._user in author):
+        await ctx.channel.send("이미 처리 중이에요")
+        return
+    author.append(ctx.author._user)
+
     name = 0
     code = 0
     ty = 0
 
     aliases = []
-
-    author.append(ctx.author)
 
     p = await ctx.channel.send("처리 중입니다..............")
 
@@ -228,7 +225,8 @@ async def 급식(ctx, *val):
     await p.delete()
 
     await ctx.channel.send(embed=embed)
-    print("완료",datetime.today())##
+
+    del author[author.index(ctx.author)]
 
 
 client.run(token)
