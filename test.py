@@ -93,10 +93,10 @@ author = []#입력한 유저의 정보 저장
 @client.command()
 async def 급식(ctx, *val):#ctx:디스코드 채팅 정보, val:명령의 뒤에 붙는 값들 (ex:이름,년,월,일)
 
-    if (ctx.author._user in author):#같은 사람이 두 개의 이상의 값을 동시에 처리할 경우 무시
+    if (ctx.author in author):#같은 사람이 두 개의 이상의 값을 동시에 처리할 경우 무시
         await ctx.channel.send("이미 처리 중이에요")
         return
-    author.append(ctx.author._user)#유저 정보 추가
+    author.append(ctx.author)#유저 정보 추가
 
     name = 0#학교 이름
     code = 0#학교 고유 코드
