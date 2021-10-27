@@ -1,6 +1,7 @@
 import asyncio
 import discord
 from datetime import datetime
+from discord.client import Client
 from discord.ext import commands 
 import requests
 import json
@@ -89,8 +90,6 @@ def printf(title, year, month, day):
 
 
 author = []                                                                           #입력한 유저의 정보 저장
-
-
 
 # 급식 명령어
 @client.command()
@@ -234,11 +233,28 @@ async def 급식(ctx, *val):                                                    
     embed.set_author(name=ctx.author.name,icon_url=ctx.author.avatar_url)             #임베드 위에 사용자의 프사와 이름을 추가
     embed.set_footer(text="이상입니다")                                                #임베드 마지막에 멘트 추가
 
-    await p.delete()                                                                   #출력된 메시지 지우기
+    await p.delete()                                                                  #출력된 메시지 지우기
 
-    await ctx.channel.send(embed=embed)                                                #임베드 값 출력
+    emoji = ['1️⃣','2️⃣','3️⃣','4️⃣','5️⃣']
+    send =await ctx.channel.send(embed=embed)                                         #임베드 값 출력
+    for i in range(5):
+        await send.add_reaction(emoji[i])
 
-    del author[author.index(ctx.author)]                                               #사용자 정보를 배열에서 지우기
+
+    def emocheck(reaction):  
+        if (reaction.user_id == ctx.author.id and reaction.emoji.name in emoji and reaction.message_id == send.id):
+            return T                                                                  #리액션을 추가한 유저와 명렁어 유저가 같고 리액션이 리스트에 있으며 리액션 메시지 아이이돠 임베드와 같을 경우
+
+    try:
+        reaction = await client.wait_for(event='raw_reaction_add', timeout = 15,check = emocheck)
+    except asyncio.TimeoutError:
+        await ctx.channel.send("시간초과")
+    else:
+        await send.delete()
+        await ctx.channel.send(embed=embed)
+ 
+
+    del author[author.index(ctx.author)]                                              #사용자 정보를 배열에서 지우기
 
 
-client.run(token)                                                                       #token 값을 가진 봇을 구동
+client.run(token)                                                                     #token 값을 가진 봇을 구동
