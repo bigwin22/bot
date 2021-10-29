@@ -250,10 +250,12 @@ async def 급식(ctx, *val):                                                    
     except asyncio.TimeoutError:
         await ctx.channel.send("시간초과")
     else:
-        fpath = "./school/"
+        print(1)
+        """fpath = "./school/"
         os.makedirs(fpath, exist_ok=True)
 
-        f = open(fpath+"/"+name+'.gf','rw')
+        f = open(fpath+"/"+name+'.gf','rw')"""
+        
         
 
         
