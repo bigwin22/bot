@@ -250,8 +250,16 @@ async def 급식(ctx, *val):                                                    
     except asyncio.TimeoutError:
         await ctx.channel.send("시간초과")
     else:
-        await send.delete()
-        await ctx.channel.send(embed=embed)
+        fpath = "./school/"
+        os.makedirs(fpath, exist_ok=True)
+
+        f = open(fpath+"/"+name+'.gf','rw')
+        
+
+        
+        
+    await send.delete()
+    await ctx.channel.send(embed=embed)
  
 
     del author[author.index(ctx.author)]                                              #사용자 정보를 배열에서 지우기
