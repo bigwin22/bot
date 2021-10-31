@@ -6,8 +6,10 @@ from discord.ext import commands
 import requests
 import json
 import os
-import process
-import review
+
+import module.process as process
+import module.review as reveiw
+from module.mainprocess import Today
 
 #학교코드:7041189
 
@@ -142,28 +144,11 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
         when = ['breakfast', 'lunch', 'dinner']  # 아침 점심 저녁
 
         try:
-            y = 0  # 년
-            m = 0  # 월
-            d = 0  # 일
-            if (len(val) == 4):  # 명령어 뒤에 입력된게 4개일 경우
-                #val[0]:학교 이름
-                y = val[1]  # val[1]:(이름 뒤에 year)
-                m = val[2]  # val[2]:month
-                d = val[3]  # val[3]:day
-                # 임베드를 printf값으로 결정
-                embed = printf(name, val[1], val[2], val[3])
-            elif (len(val) == 3):
-                y = str(date.year)  # 현재 년도
-                m = val[1]  # val[1]:(이름 뒤에 year)
-                d = val[2]  # val[2]:month
-                # 임베드를 printf값으로 결정
-                embed = printf(name, str(date.year), val[1], val[2])
-            elif (len(val) == 1 or len(val) == 0):
-                y = str(date.year)  # 현재 년도로
-                m = str(date.month)  # 현재 월로
-                d = str(date.day)  # 현재 일로
-                embed = printf(name, str(date.year), str(
-                    date.month), str(date.day))  # 임베드를 printf값으로 결정
+            today = Today(val)
+            embed = printf(name,today.y,today.m,today.d)
+            y = today.y  # 년
+            m = today.m # 월
+            d = today.d  # 일
 
             for i in range(3):  # 3번 반복
                 # store에 getfood값을 추가
