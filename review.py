@@ -19,8 +19,9 @@ def review(reaction:str,name:str,y:str,m:str,d:str,author:str) -> None:
         def setdata(self):
             p = open(schoolp+'/total.gf','r')
             avgt = p.readline()
-            avgt = int(avgt.strip('\n'))
-            totalt = int(p.readline())
+            avgt = float(avgt.strip('\n'))
+            totalt = float(p.readline())
+            p.close()
 
             self.avgt = avgt
             self.totalt = totalt
@@ -28,44 +29,49 @@ def review(reaction:str,name:str,y:str,m:str,d:str,author:str) -> None:
 
             x = open(schoolp+'/'+today+'.gf', 'r')
             self.plus = x.readline()
-            self.plus = int(self.plus.strip('\n'))
+            self.plus = float(self.plus.strip('\n'))
+            x.close()
 
     def No():
         nonlocal new
         school = open(schoolp+'/'+y+m+d+'.gf', 'r')
         avg = school.readline()
-        avg = int(avg.strip('\n'))
-        total = int(school.readline())
+        avg = float(avg.strip('\n'))
+        total = float(school.readline())
         sum = avg*total
         school.close()
 
         user = open(reviewp+name+'/'+today+'.gf', 'w')
         user.write('0')
+        user.close()
 
         treview = object()
         treview.setdata()
-        user.write(emoji.index(reaction.emoji.name))
-
-        choice = emoji.index(reaction.emoji.name)
-        avg = (sum+choice)/(total+1)
+        user = open(reviewp+name+'/'+today+'.gf', 'w')
+        user.write(str(emoji.index(reaction.emoji.name)+1))
         user.close()
 
+        choice = emoji.index(reaction.emoji.name)+1
+        avg = (sum+choice)/(total+1)
+        
+
         school = open(schoolp+'/'+today+'.gf', 'w')
-        school.write(avg+'\n'+(total+1))
+        school.write(str(float(avg))+'\n'+str(total+1))
         school.close()
 
         school = open(schoolp+'/'+today+'.gf', 'r')
         user   = open(reviewp+name+'/'+today+'.gf', 'r')
-        em = user.readline()
-        em = int(em.strip('\n'))
+        em = school.readline()
+        em = float(em.strip('\n'))
+        school.close()
+        user.close()
         treview.sumt -= treview.plus
         treview.sumt += em
         treview.avgt = treview.sumt/(treview.totalt+new)
-        school.close()
-        user.close()
-
+        
         t = open(schoolp+'/total.gf','w')
-        t.write(str(treview.avgt)+'\n'+str(treview.totalt+new))
+        t.write(str(float(treview.avgt))+'\n'+str(treview.totalt+new))
+        t.close()
 
     def Yes():
         nonlocal new
@@ -74,37 +80,39 @@ def review(reaction:str,name:str,y:str,m:str,d:str,author:str) -> None:
 
         school = open(schoolp+'/'+today+'.gf', 'r')
         avg = school.readline()
-        avg = int(avg.strip('\n'))
-        total = int(school.readline())
+        avg = float(avg.strip('\n'))
+        total = float(school.readline())
         sum = avg*total
         school.close()
 
         user = open(reviewp+name+'/'+today+'.gf', 'r')
-        choice = int(user.readline())
+        choice = float(user.readline())
         user.close()
 
         sum -= choice
 
-        choice = emoji.index(reaction.emoji.name)
+        choice = emoji.index(reaction.emoji.name)+1
 
         user = open(reviewp+name+'/'+today+'.gf', 'w')
         avg = (sum+choice)/total
-        user.write(emoji.index(reaction.emoji.name))
+        user.write(str(emoji.index(reaction.emoji.name)+1))
         user.close()
 
-        school = open(reviewp+name+'/'+today+'.gf', 'w')
-        school.write(avg+'\n'+total)
+        school = open(schoolp+'/'+today+'.gf', 'w')
+        school.write(str(float(avg))+'\n'+str(total))
         school.close()
 
-        school = open(reviewp+name+'/'+y+m+d+'.gf', 'r')
+        school = open(schoolp+'/'+today+'.gf', 'r')
         em = school.readline()
-        em = int(em.strip('\n'))
+        em = float(em.strip('\n'))
         treview.sumt -= treview.plus
         treview.sumt += em
         treview.avgt = treview.sumt/(treview.totalt+new)
+        school.close()
 
         t = open(schoolp+'/total.gf','w')
-        t.write(str(treview.avgt)+'\n'+str(treview.totalt+new))
+        t.write(str(float(treview.avgt))+'\n'+str(treview.totalt+new))
+        t.close()
 
    
     if os.path.isdir(schoolp) == F:

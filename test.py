@@ -69,8 +69,6 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
 
     store = []  # 음식 값 저장
 
-                                                #정보 저장 경로
-
     try:
         if (len(val) == 0):  # 명령어 뒤에 아무것도 입력되지 않았다면(ex: !급식)
             if (os.path.isfile(fpath+'/code.gf')):  # fpaht에 파일 있다면
@@ -202,7 +200,7 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
     await p.delete()  # 출력된 메시지 지우기
     send = await ctx.channel.send(embed=embed)  # 임베드 값 출력
     ##여기부터 반응 관련 코드
-    if (y == str(date.year) and m == str(date.month) and d == str(date.day)) and content == 1:
+    if T:
         emoji = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣']
         for i in range(5):
             await send.add_reaction(emoji[i])
@@ -217,7 +215,7 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
             await send.delete()
             await ctx.channel.send(embed=embed)
         else:
-            review.review(reaction,name,y,m,d,ctx.author)
+            review.review(reaction,name,y,m,d,str(ctx.author))
             await send.delete()
             await ctx.channel.send(embed=embed)
             
