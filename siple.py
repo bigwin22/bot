@@ -1,1 +1,1 @@
-print(float('1.3'))
+print("a:{0}, b:{0}", )
