@@ -8,7 +8,7 @@ import json
 import os
 
 import module.process as process
-import module.review as reveiw
+import module.review as review
 from module.mainprocess import Today
 
 #학교코드:7041189
