@@ -195,12 +195,14 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
         embed.add_field(name=when[i], value=store[i], inline=False)
     # 임베드 위에 사용자의 프사와 이름을 추가
     embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+
+    
     embed.set_footer(text="이상입니다")  # 임베드 마지막에 멘트 추가
 
     await p.delete()  # 출력된 메시지 지우기
     send = await ctx.channel.send(embed=embed)  # 임베드 값 출력
     ##여기부터 반응 관련 코드
-    if T:
+    if (y == str(date.year), m == str(date.month), d == str(date.day)) and content == 1 and datetime.today().hour >= 12:
         emoji = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣']
         for i in range(5):
             await send.add_reaction(emoji[i])
@@ -219,9 +221,6 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
             await send.delete()
             await ctx.channel.send(embed=embed)
             
-        
-            
-      
     del author[author.index(ctx.author)]                                              #사용자 정보를 배열에서 지우기
 
 
