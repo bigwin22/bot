@@ -202,7 +202,7 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
     await p.delete()  # 출력된 메시지 지우기
     send = await ctx.channel.send(embed=embed)  # 임베드 값 출력
     ##여기부터 반응 관련 코드
-    if (y == str(date.year), m == str(date.month), d == str(date.day)) and content == 1:
+    if (y == str(date.year) and m == str(date.month) and d == str(date.day)) and content == 1:
         emoji = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣']
         for i in range(5):
             await send.add_reaction(emoji[i])

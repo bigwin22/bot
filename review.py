@@ -4,7 +4,7 @@ import discord
 F = False
 T = True
 
-def review(reaction:str,name,y,m,d,author) -> None:
+def review(reaction:str,name:str,y:str,m:str,d:str,author:str) -> None:
     '''별점 리뷰 관련 처리 코드'''
     new = 0
     emoji = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣']
