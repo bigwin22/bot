@@ -205,7 +205,7 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
         for i in range(5):
             await send.add_reaction(emoji[i])
 
-        def emocheck(reactio):
+        def emocheck(reaction):
             if (reaction.user_id == ctx.author.id and reaction.emoji.name in emoji and reaction.message_id == send.id):
                 return T  # 리액션을 추가한 유저와 명렁어 유저가 같고 리액션이 리스트에 있으며 리액션 메시지 아이이돠 임베드와 같을 경우
 
