@@ -23,7 +23,6 @@ print(datetime.today())
 # 생성된 토큰을 입력해준다.
 token = ""
 
-
 # 봇이 구동되었을 때 보여지는 코드
 @client.event
 async def on_ready():
@@ -94,9 +93,12 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
                 return  # 리턴(끝내기)
 
         elif (len(val) > 0):  # 명령어 뒤에 입력된 값이 있으면
-            name = process.setname(val[0])  # name을 setname(val[0])으로 하기
+            if os.path.isfile('./user/'+str(ctx.author)+'/shorts/'+val[0]+'.gf'):
+                file = open('./user/'+str(ctx.author)+'/shorts/'+val[0]+'.gf','r')
+                name = process.setname(str(file.readline()))
+            else:
+                name = process.setname(val[0])  # name을 setname(val[0])으로 하기
             code = process.getcode(name)  # code를 getcode(name)올 하기
-
         if (len(code) > 1):  # code안의 값이 2개 이상일 경우
             aliases = []  # 선택지 aliases를 빈 list로 만들기
             add = process.getadd(name)  # add를 getadd(name)의 값으로 하기
@@ -220,7 +222,23 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
             await send.delete()
             await ctx.channel.send(embed=embed)
             
-    del author[author.index(ctx.author)]                                              #사용자 정보를 배열에서 지우기
+    del author[author.index(ctx.author)]                                             #사용자 정보를 배열에서 지우기
+
+
+@client.command(name = '줄이기')
+async def short(ctx, origin, new):
+    path = './user/'+str(ctx.author)+'/shorts/'
+    os.makedirs(path,exist_ok=T)
+    p = open(path+str(new)+'.gf', 'w')
+    p.write(str(origin))
+    await ctx.channel.send(origin + '->' + new +' 줄이기 성공')
+@short.error
+async def error(ctx, error):
+    await ctx.channel.send("제대로 입력해주세요")
+
+@client.event
+async def on_command_error(ctx, error):
+    pass
 
 
 os.makedirs('./school', exist_ok=T)       
