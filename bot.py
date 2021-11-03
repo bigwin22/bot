@@ -21,7 +21,8 @@ T = True
 print(datetime.today())
 
 # 생성된 토큰을 입력해준다.
-token = ""
+token = open('token.token','r')
+token = str(token.readline())
 
 # 봇이 구동되었을 때 보여지는 코드
 @client.event
