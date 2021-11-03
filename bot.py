@@ -204,8 +204,8 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
     send = await ctx.channel.send(embed=embed)  # 임베드 값 출력
     ##여기부터 반응 관련 코드
     if (y == str(date.year) and m == str(date.month) and d == str(date.day)) and content == 1 and datetime.today().hour >= 12:
-        emoji = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣']
-        for i in range(5):
+        emoji = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣','❌']
+        for i in range(6):
             await send.add_reaction(emoji[i])
 
         def emocheck(reaction):
@@ -218,7 +218,8 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
             await send.delete()
             await ctx.channel.send(embed=embed)
         else:
-            review.review(reaction,name,y,m,d,str(ctx.author))
+            if (reaction.emoji.name != '❌'):
+                review.review(reaction,name,y,m,d,str(ctx.author))
             await send.delete()
             await ctx.channel.send(embed=embed)
             
