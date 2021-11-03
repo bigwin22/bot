@@ -226,7 +226,7 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
     del author[author.index(ctx.author)]                                             #사용자 정보를 배열에서 지우기
 
 
-@client.command(name = '줄이기')
+@client.command(name = '별칭')
 async def short(ctx, origin, new):
     path = './user/'+str(ctx.author)+'/shorts/'
     os.makedirs(path,exist_ok=T)
