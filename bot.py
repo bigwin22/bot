@@ -21,7 +21,7 @@ T = True
 print(datetime.today())
 
 # 생성된 토큰을 입력해준다.
-token = ""
+token = "NzczNDQzMjI1NDI3NjQwMzIw.X6JTIg.UhLj7TKcruVNhMuoY34pWTnYqgQ"
 
 # 봇이 구동되었을 때 보여지는 코드
 @client.event
@@ -231,7 +231,7 @@ async def short(ctx, origin, new):
     os.makedirs(path,exist_ok=T)
     p = open(path+str(new)+'.gf', 'w')
     p.write(str(origin))
-    await ctx.channel.send(origin + '->' + new +' 줄이기 성공')
+    await ctx.channel.send('줄이기 성공:'+origin + '->' + new)
 @short.error
 async def error(ctx, error):
     await ctx.channel.send("제대로 입력해주세요")
