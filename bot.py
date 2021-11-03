@@ -21,7 +21,7 @@ T = True
 print(datetime.today())
 
 # 생성된 토큰을 입력해준다.
-token = "NzczNDQzMjI1NDI3NjQwMzIw.X6JTIg.UhLj7TKcruVNhMuoY34pWTnYqgQ"
+token = ""
 
 # 봇이 구동되었을 때 보여지는 코드
 @client.event
