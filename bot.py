@@ -123,7 +123,7 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
 
             try:
                 # (client.message의 값이 3초안에 check에 부합한가)를 실행후 msg에 저장
-                msg = await client.wait_for('message', timeout=3, check=check)
+                msg = await client.wait_for('message', timeout=8, check=check)
             except asyncio.TimeoutError:  # 시간초과가 날 경우
                 for i in range(len(a)):  # a의 값 개수만큼 반복
                     await a[i].delete()  # 출력한 메시지 지우기

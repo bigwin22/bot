@@ -1,7 +1,5 @@
-
-school
-user
-venv
-해야할_일.txt
 token.token
-.gitignore
+user
+school
+해야할_일.txt
+./module/__pycache__
