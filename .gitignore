@@ -4,3 +4,4 @@ user
 venv
 해야할_일.txt
 token.token
+.gitignore
