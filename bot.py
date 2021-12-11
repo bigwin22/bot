@@ -8,9 +8,9 @@ import json
 import os
 
 #내가 만든 module
-import module.process as process
-import module.review as review
-from module.mainprocess import Today
+import module.process as process #moduel 폴더의 process 모듈을 process로 규정하여 import해라
+import module.review as review #이하동문
+from module.mainprocess import Today #import 'Today' funtion in mainprocess in module folder 
 
 #학교코드:7041189
 
@@ -94,9 +94,9 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
                 return  # 리턴(끝내기)
 
         elif (len(val) > 0):  # 명령어 뒤에 입력된 값이 있으면
-            if os.path.isfile('./user/'+str(ctx.author)+'/shorts/'+val[0]+'.gf'):
-                file = open('./user/'+str(ctx.author)+'/shorts/'+val[0]+'.gf','r')
-                name = process.setname(str(file.readline()))
+            if os.path.isfile('./user/'+str(ctx.author)+'/shorts/'+val[0]+'.gf'):#줄임말 파일이 있으면
+                file = open('./user/'+str(ctx.author)+'/shorts/'+val[0]+'.gf','r')#파일 불러외기
+                name = process.setname(str(file.readline()))#이름 재규정 하기
             else:
                 name = process.setname(val[0])  # name을 setname(val[0])으로 하기
             code = process.getcode(name)  # code를 getcode(name)올 하기
@@ -106,7 +106,7 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
             de = 0  # 몇번째로 결정할 것인가
 
             def check(message):  # wait_for check 함수
-                nonlocal de
+                nonlocal de#de 호출
                 # 입력한 값이 aliases안에 message의 내용이 있고/                                                        #message를 입력한 사람와 명령어를 입력한 사람이 같은가
                 if ((int(message.content) in aliases) and (message.author == ctx.author)):
                     # de(번호 결정)를 message를 정수로 한거에 -1로 정하기
@@ -142,7 +142,6 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
             code = code[0]  # code는 code[0]으로 하기
 
         ty = process.gettype(name)  # ty(학교 유형)을 gettype(name)로
-        print(code)  # 테스트 코드
         
 
         when = ['breakfast', 'lunch', 'dinner']  # 아침 점심 저녁
@@ -183,20 +182,20 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
         # 임베드에 when[i]를 제목으로 store[i]를 내용으로 하여 줄을 내려 출력함을 추가
         embed.add_field(name=when[i], value=store[i], inline=False)
     # 임베드 위에 사용자의 프사와 이름을 추가
-    embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+    embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)##임베드 위 사용자 표시
 
-    if (os.path.isdir('./school/'+name)):
-        to = open('./school/'+name+'/total.gf', 'r')
+    if (os.path.isdir('./school/'+name)):#학교 이름 폴더가 있으면
+        to = open('./school/'+name+'/total.gf', 'r')#전체 별점 값 불러오기
         total = to.readline()
-        total = float(total.strip('\n'))
-        if(os.path.isfile('./school/'+name+'/'+y+m+d+'.gf')):
-            t = open('./school/'+name+'/'+y+m+d+'.gf', 'r')
+        total = float(total.strip('\n'))#실수화 시키기
+        if(os.path.isfile('./school/'+name+'/'+y+m+d+'.gf')):#해당 날짜의 별점 값이 있으면
+            t = open('./school/'+name+'/'+y+m+d+'.gf', 'r')#불러오기
             re = t.readline()
-            re = float(re.strip('\n'))
-            embed.set_footer(text="이 급식의 평점:"+str(re)+"  학교 전체 평점:"+str(total))
+            re = float(re.strip('\n'))#실수화 시키기
+            embed.set_footer(text="이 급식의 평점:"+str(re)+"  학교 전체 평점:"+str(total))#밑에다가 별점 표시
             t.close()
         else:
-            embed.set_footer(text="이 급식의 평점:없음  학교 전체 평점:"+str(total))
+            embed.set_footer(text="이 급식의 평점:없음  학교 전체 평점:"+str(total))#밑에다가 표시
             to.close()
     else:
         embed.set_footer(text="이 급식의 평점:없음  학교 전체 평점:없음")  # 임베드 마지막에 멘트 추가
@@ -204,45 +203,46 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
     await p.delete()  # 출력된 메시지 지우기
     send = await ctx.channel.send(embed=embed)  # 임베드 값 출력
     ##여기부터 반응 관련 코드
-    if (y == str(date.year) and m == str(date.month) and d == str(date.day)) and content == 1 and datetime.today().hour >= 12:
+    if (y == str(date.year) and m == str(date.month) and d == str(date.day)) and content == 1 and datetime.today().hour >= 12:#출력일이 오늘이고 내용이 있으며 12시 이상일경우
         emoji = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣','❌']
         for i in range(6):
-            await send.add_reaction(emoji[i])
+            await send.add_reaction(emoji[i])#리액션 추가
 
-        def emocheck(reaction):
+        def emocheck(reaction):#확인 함수
             if (reaction.user_id == ctx.author.id and reaction.emoji.name in emoji and reaction.message_id == send.id):
                 return T  # 리액션을 추가한 유저와 명렁어 유저가 같고 리액션이 리스트에 있으며 리액션 메시지 아이이돠 임베드와 같을 경우
 
         try:
-            reaction = await client.wait_for(event='raw_reaction_add', timeout = 15,check = emocheck)
+            reaction = await client.wait_for(event='raw_reaction_add', timeout = 15,check = emocheck)#리액션 함수
         except asyncio.TimeoutError:
-            await send.delete()
-            await ctx.channel.send(embed=embed)
+            await send.delete()#임베드 지우기
+            await ctx.channel.send(embed=embed)#재출력
         else:
-            if (reaction.emoji.name != '❌'):
-                review.review(reaction,name,y,m,d,str(ctx.author))
-            await send.delete()
-            await ctx.channel.send(embed=embed)
+            if (reaction.emoji.name != '❌'):#리액션이❌가 아닐경우
+                review.review(reaction,name,y,m,d,str(ctx.author))#별점 처리
+            await send.delete()#지우기#
+            await ctx.channel.send(embed=embed)#재출력
             
     del author[author.index(ctx.author)]                                             #사용자 정보를 배열에서 지우기
 
 
-@client.command(name = '별칭')
+@client.command(name = '별칭')#별칭 기능
 async def short(ctx, origin, new):
-    path = './user/'+str(ctx.author)+'/shorts/'
-    os.makedirs(path,exist_ok=T)
-    p = open(path+str(new)+'.gf', 'w')
-    p.write(str(origin))
-    await ctx.channel.send('줄이기 성공:'+origin + '->' + new)
-@short.error
+    '''This funtion is that shorts origin name to custom name'''
+    path = './user/'+str(ctx.author)+'/shorts/'#경로 지정
+    os.makedirs(path,exist_ok=T)#폴더 생정
+    p = open(path+str(new)+'.gf', 'w')#파일 오픈
+    p.write(str(origin))#쓰기
+    await ctx.channel.send('줄이기 성공:'+origin + '->' + new)#메세지 출력
+@short.error#줄이기 에러가 날 경우
 async def error(ctx, error):
     await ctx.channel.send("제대로 입력해주세요")
 
-@client.event
+@client.event#에러가 날경우
 async def on_command_error(ctx, error):
     pass
 
 
-os.makedirs('./school', exist_ok=T)       
-os.makedirs('./user',exist_ok=T)
-client.run(token)                                                                     #token 값을 가진 봇을 구동
+os.makedirs('./school', exist_ok=T)#폴더 만들기  
+os.makedirs('./user',exist_ok=T)#폴더 만들기
+client.run(token)                                                        #token 값을 가진 봇을 구동

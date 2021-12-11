@@ -2,4 +2,7 @@ token.token
 user
 school
 해야할_일.txt
-./module/__pycache__
+./module/__pycache__/
+memo.txt
+.module/__pycache__/mainprocess.cpython-39.pyc
+test.py
