@@ -85,7 +85,7 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
 
 #######################################경우에 수에 따른 변수 값 지정#####################
     if len(val) == 0:
-        if os.path.isfile(fpath+'/name.gf', 'r'):
+        if os.path.isfile(fpath+'/name.gf'):
             f = open(fpath+'/name.gf', 'r')
             em = f.readline()
             school.name = em
@@ -148,7 +148,7 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
     f.close()
 
     f = open(fpath+"/code.gf",'w')
-    f.write(school.code)
+    f.write(school.area+school.code)
     f.close()
 ##################################################################################################
 
