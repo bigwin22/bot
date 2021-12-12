@@ -1,74 +1,46 @@
 import requests
 import json
+import re
 
 
 
 #name의 학교 고유 코드를 구하는 함수(return 값 타입: list)
 
-
-def getcode(name):
-    url = "https://schoolmenukr.ml/code/api?q=" + name  # api의 url 저장
+base = 'KEY=ea324d9b0bfc42c68ade03af97650ce4&TYPE=json'
+def basic(name, want,num):
+    '''
+    학교의 기본 정도를 구하는 코드
+    'num'은 여러 학교가 있을 경우: -1(모두)
+    '''
+    url = 'https://open.neis.go.kr/hub/schoolInfo?'+base+'&SCHUL_NM='+name
     response = requests.get(url)
-    school_infos = json.loads(response.text)  # json을 파싱
-    code = [info['code']
-        for info in school_infos['school_infos']]  # school_infos의 code값 추출
-    return code
+    infos = json.loads(response.text)
+    try:
+        val = infos['schoolInfo'][1]['row']
+        if (num != -1):
+            return val[num][want]
+        arr = []
+        for i in val:
+            arr.append(i[want])
+        arr.sort()
+        return arr
+    except:
+        return False
 
-#name의 학교의 주소를 구하는 함수(return 값 타입: list)
-
-
-def getadd(name):
-    url = "https://schoolmenukr.ml/code/api?q=" + name  # api의 url 저장
+def food(area:str, code:int, when:int, date:str) -> str:
+    '''학교 음식을 구해줌, when은 1~3 각각 아침~저녁'''
+    url = 'https://open.neis.go.kr/hub/mealServiceDietInfo?'\
+        +str(base)+'&ATPT_OFCDC_SC_CODE='+area\
+        +'&SD_SCHUL_CODE='+str(code)+'&MLSV_YMD='+date\
+        +"&MMEAL_SC_CODE=" + str(when)
     response = requests.get(url)
-    school_infos = json.loads(response.text)  # json을 파싱
-    add = [info['address']
-        for info in school_infos['school_infos']]  # school_infos의 address값 추출
-    return add
-
-#name을 완전한 이름으로 변환(ex: 영서중 -> 영서중학교)
-
-
-def setname(name):
-    em = list(name)  # str을 list 변환
-    em.reverse()  # 이름 뒤집기
-    app = ''
-    if (em[0] == '초' or em[0] == '고'):  # 뒤집고 나서 앞에 있는 글자로 완전 여부 파악후 이름 완성
-        app = '등학교'
-    elif(em[0] == '중'):
-        app = '학교'
-    em.reverse()
-    if (app == ''):
-        return name
-    return name+app
-
-#name의 학교의 타입을 구하는 함수(ex: 한국디지털미디어고등학교 -> high/영서중 -> middle)
-
-
-def gettype(name):
-    em = list(name)  # str을 list로 변환
-    em.reverse()  # 이름 뒤집기
-    if (em[2] == '중'):  # 뒤집고 나서 앞에 있는 글자로 학교의 유형 파악
-        return "middle"
-    elif (em[2] == '등'):
-        if (em[3] == '초'):
-            return "elementary"
-        else:
-            return "high"
-
-#급식 리스트를 구하는 함수(ty:학교의 유형(elementary,middle,high), code:학교 고유 코드,when:(아침,점심,저녁)
-#                         year,month,day:년,월,일)
-
-
-def getfood(ty, code, when, year, month, day):
-    url = 'https://schoolmenukr.ml/api/'+ty+'/'+code+'?'+'year='+year + \
-        '&'+'month='+month+'&'+'date='+day+'&'+'allergy='+'hidden'  # api 링크
-    response = requests.get(url)
-    school_infos = json.loads(response.text)  # json 파싱
-    code = [info[when] for info in school_infos['menu']]  # menu의 'when'의 값 추출
-    p = ''
-    for a in code:  # 음식이름에 ',' 추가
-        for x in a:
-            p += x + ', '
-    if (p == ''):
+    infos = json.loads(response.text)
+    try:
+        food = infos["mealServiceDietInfo"][1]["row"][0]["DDISH_NM"]
+        food = re.sub(r'[0-9]+','', food)#숫자제거
+        food = food.replace('.','')#.제거
+        food = food.replace('<br/>',',')#제거
+        return food
+    except:
         return "없음"
-    return p
+

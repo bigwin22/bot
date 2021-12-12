@@ -1,8 +1,12 @@
-token.token
-user
+.vscode/
+.module/__pycache
 school
+user
+venv
 해야할_일.txt
-./module/__pycache__/
 memo.txt
-.module/__pycache__/mainprocess.cpython-39.pyc
+.json
 test.py
+school basic info json.json
+workspace.code-workspace.code-workspace
+token.token

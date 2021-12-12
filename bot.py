@@ -7,12 +7,14 @@ import requests
 import json
 import os
 
-#내가 만든 module
-import module.process as process #moduel 폴더의 process 모듈을 process로 규정하여 import해라
-import module.review as review #이하동문
-from module.mainprocess import Today #import 'Today' funtion in mainprocess in module folder 
+# 내가 만든 module
+import module.process as process  # moduel 폴더의 process 모듈을 process로 규정하여 import해라
+import module.review as review  # 이하동문
+# import 'Today' funtion in mainprocess in module folder
+from module.mainprocess import Today
+from module.mainprocess import School
 
-#학교코드:7041189
+# 학교코드:7041189
 
 client = commands.Bot(command_prefix='!')  # 명령어 호출 코드
 F = False
@@ -21,10 +23,12 @@ T = True
 print(datetime.today())
 
 # 생성된 토큰을 입력해준다.
-token = open('token.token','r')
+token = open('token.token', 'r')
 token = str(token.readline())
 
 # 봇이 구동되었을 때 보여지는 코드
+
+
 @client.event
 async def on_ready():
     print("다음으로 로그인합니다")
@@ -33,8 +37,7 @@ async def on_ready():
     print("================")
 
 
-
-#임베드 추가 함수
+# 임베드 추가 함수
 
 
 def printf(title, year, month, day):
@@ -49,6 +52,8 @@ author = []  # 입력한 유저의 정보 저장
 
 @client.command()
 async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 뒤에 붙는 값들 (ex:이름,년,월,일)
+    date = datetime.now()
+##################################################처리 시작 코드#######################
     fpath = "./user/"+str(ctx.author)
     os.makedirs(fpath, exist_ok=T)  # fpath 경로에 폴더가 존재하지 않을 시 생성
     os.makedirs(fpath+'/review', exist_ok=T)
@@ -58,191 +63,171 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
         return
     author.append(ctx.author)  # 유저 정보 추가
 
-    name = 0  # 학교 이름
-    code = 0  # 학교 고유 코드
-    ty = 0  # 학교의 유형
+    p = await ctx.channel.send("처리 중입니다..........")
+#######################################################################################
 
-    aliases = []  # 같은 이름학교의 2개 이상일 경우의 선택지
+###################################################기본 세팅(변수,함수)##########################
+    school = School()
 
-    p = await ctx.channel.send("처리 중입니다..............")  # 처리중 메시지 출력
+    choice = 0 #선택지
+    clist = [] #choice list 선택지
+    cprint = [] #choice 출력 배열
+    def check(message) -> bool: #선택지 함수
+        """선택지의 T,F 여부"""
+        nonlocal choice
+        if int(message.content) in clist and message.author == ctx.author:
+            choice = int(message.content) - 1
+            return T
+        return F
+    
+    store = []
+ ##################################################################################### 
 
-    date = datetime.now()  # 현재 날짜
-    print("입력됨", ctx, val)  # 로그 출력
-    embed = 0  # 임베드 저장
+#######################################경우에 수에 따른 변수 값 지정#####################
+    if len(val) == 0:
+        if os.path.isfile(fpath+'/name.gf', 'r'):
+            f = open(fpath+'/name.gf', 'r')
+            em = f.readline()
+            school.name = em
+            f.close()
 
-    store = []  # 음식 값 저장
-
-    try:
-        if (len(val) == 0):  # 명령어 뒤에 아무것도 입력되지 않았다면(ex: !급식)
-            if (os.path.isfile(fpath+'/code.gf')):  # fpaht에 파일 있다면
-
-                f = open(fpath+"/name.gf", 'r')  # fpath의 name.gf를 읽기모드로 열어라
-                x = f.readline()  # 연 파일의 첫 줄을 읽고 변수에 대입
-                name = process.setname(x)  # name을 setname(x)의 값으로 구하라
-                f.close()  # 파일을 닫아라
-
-                f = open(fpath+"/code.gf", 'r')  # fpath의 code.gf를 읽기모드로 열어라
-                x = f.readline()  # 연 파일의 첫 줄을 읽고 변수에 대입
-                code = []  # code변수를 빈 list로 만들기
-                code.append(x)  # code에 x값을 추가
-                f.close()  # 파일을 닫아라
-
-            else:
-                await p.delete()  # '처리중입니다'지우기
-                await ctx.channel.send("마지막으로 입력된 학교가 없습니다")  # 출력
-                del author[author.index(ctx.author)]  # 사용자 정보를 배열에서 지우기.
-                return  # 리턴(끝내기)
-
-        elif (len(val) > 0):  # 명령어 뒤에 입력된 값이 있으면
-            if os.path.isfile('./user/'+str(ctx.author)+'/shorts/'+val[0]+'.gf'):#줄임말 파일이 있으면
-                file = open('./user/'+str(ctx.author)+'/shorts/'+val[0]+'.gf','r')#파일 불러외기
-                name = process.setname(str(file.readline()))#이름 재규정 하기
-            else:
-                name = process.setname(val[0])  # name을 setname(val[0])으로 하기
-            code = process.getcode(name)  # code를 getcode(name)올 하기
-        if (len(code) > 1):  # code안의 값이 2개 이상일 경우
-            aliases = []  # 선택지 aliases를 빈 list로 만들기
-            add = process.getadd(name)  # add를 getadd(name)의 값으로 하기
-            de = 0  # 몇번째로 결정할 것인가
-
-            def check(message):  # wait_for check 함수
-                nonlocal de#de 호출
-                # 입력한 값이 aliases안에 message의 내용이 있고/                                                        #message를 입력한 사람와 명령어를 입력한 사람이 같은가
-                if ((int(message.content) in aliases) and (message.author == ctx.author)):
-                    # de(번호 결정)를 message를 정수로 한거에 -1로 정하기
-                    de = int(message.content) - 1
-                    return T
-                return F
-
-            a = []  # 선택지 출력 저장
-            for i in range(len(add)):  # 주소의 갯수만큼 반복
-                aliases.append(i+1)  # aliases(선택지)에 i+1를 추가
-                # 선택지를 출력하고 이를 a에 추가
-                a.append(await ctx.channel.send("```"+str(i+1)+":"+add[i]+"```"))
-            b = await ctx.channel.send("(번호)로 입력해주세요 ``예: 1``")  # 출력후 b에 저장
+            f = open(fpath+'/code.gf', 'r')
+            em = f.readline()
+            school.area = em[0:3]
+            school.code = em[3:]
+            f.close()
+        else:
+            await p.delete()
+            await ctx.channel.send("마지막으로 입력된 학교가 없습니다.")
+            del author[author.index(ctx.author)]
+            return
+    elif len(val) > 0:
+        if os.path.isfile('./user/'+str(ctx.author)+'/shorts/'+val[0]+'.gf'):
+            f = open('./user/'+str(ctx.author)+'/shorts/'+val[0]+'.gf','r')
+            school.school(str(f.readline()),-1)
+        else:
+            school.school(val[0],-1)
+        if len(school.name) > 1:
+            clist = []
+            cprint = []
+            for i in range(len(school.name)):
+                clist.append(i+1)
+                cprint.append(await ctx.channel.send("```"+str(i+1)+":"+school.name[i]+'('+school.add[i]+')'+"```"))
+            a = await ctx.channel.send("(번호)로 입력해주세요 ``예: 1``")
 
             try:
-                # (client.message의 값이 3초안에 check에 부합한가)를 실행후 msg에 저장
-                msg = await client.wait_for('message', timeout=8, check=check)
-            except asyncio.TimeoutError:  # 시간초과가 날 경우
-                for i in range(len(a)):  # a의 값 개수만큼 반복
-                    await a[i].delete()  # 출력한 메시지 지우기
-                await b.delete()  # 출력한 메시지 지우기
-                await p.delete()  # 출력한 메지시 지우기
-                await ctx.channel.send(ctx.author.mention+" 선택지 시간 초과")  # 출력
-                del author[author.index(ctx.author)]  # 사용자 정보를 배열에서 지우기
+                msg = await client.wait_for('message', timeout=len(school.name)+6, check=check)
+            except asyncio.TimeoutError:
+                for i in range(len(cprint)):
+                    await cprint[i].delete()
+                await a.delete()
+                await p.delete()
+                await ctx.channel.send(ctx.author.mention+" 선택지 시간 초과")
+                del author[author.index(ctx.author)]
                 return
             else:
-                code = code[de]  # code의 값을 code[de]로 결정(list -> str)
-                for i in range(len(a)):  # a에 저장되어 있는 값의 갯수만큼 반복
-                    await a[i].delete()  # 출력한 메시지 지우기
-                await b.delete()  # 출력한 메시지 지우기
-                #await msg.delete()#입력한 메시지 지우기
-        else:  # code 값 갯수가 2개 이상이 아닐경우
-            code = code[0]  # code는 code[0]으로 하기
+                school.setting(choice)
+                for i in range(len(cprint)):
+                    await cprint[i].delete()
+                await a.delete()
+        else:
+            school.setting(0)               
+###################################################################################################
 
-        ty = process.gettype(name)  # ty(학교 유형)을 gettype(name)로
-        
+##############################################급식 정보###########################################
+    today = Today(val)
+    embed = printf(school.name, today.y,today.m,today.d)
+    y = today.y
+    m = today.m
+    d = today.d
 
-        when = ['breakfast', 'lunch', 'dinner']  # 아침 점심 저녁
+    for i in range(3):
+        store.append(process.food(school.area,school.code,i+1,y+m+d))
+    f = open(fpath+"/name.gf", 'w')
+    f.write(school.name)
+    f.close()
 
-        try:
-            today = Today(val)
-            embed = printf(name,today.y,today.m,today.d)
-            y = today.y  # 년
-            m = today.m # 월
-            d = today.d  # 일
+    f = open(fpath+"/code.gf",'w')
+    f.write(school.code)
+    f.close()
+##################################################################################################
 
-            for i in range(3):  # 3번 반복
-                # store에 getfood값을 추가
-                store.append(process.getfood(ty, code, when[i], y, m, d))
-
-            f = open(fpath+"/name.gf", 'w')  # name.gf를 쓰기 모드로 열기
-            f.write(name)  # name.gf에 name을 쓰기
-            f.close()  # 파일 닫기
-
-            f = open(fpath+"/code.gf", 'w')  # code.gf를 쓰기 모드로 열기
-            f.write(code)  # code.gf에 code를 쓰기
-            f.close()  # 파일 닫기
-
-        except:
-            del author[author.index(ctx.author)]  # 사용자 정보를 배열에서 지우기
-            await ctx.channel.send("제대로 입력해주세요")  # 출력
-            return
-    except:
-        del author[author.index(ctx.author)]  # 사용자 정보를 배열에서 지우기
-        await ctx.channel.send("학교 이름을 제대로 입력해주세요")  # 출력
-        return
-
-    when = ["아침", "점심", "저녁"]  # 아침 점심 저녁
-    content = 0  # 내용 여부
-    for i in range(3):  # 3번 반복
+######################################급식 정보 출력##################################################
+    when = ['아침','점심','저녁']
+    content = 0
+    for i in range(3):
         if store[i] != '없음':
             content = 1
-        # 임베드에 when[i]를 제목으로 store[i]를 내용으로 하여 줄을 내려 출력함을 추가
-        embed.add_field(name=when[i], value=store[i], inline=False)
-    # 임베드 위에 사용자의 프사와 이름을 추가
-    embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)##임베드 위 사용자 표시
+        embed.add_field(name=when[i],value=store[i],inline=F)
+    embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
 
-    if (os.path.isdir('./school/'+name)):#학교 이름 폴더가 있으면
-        to = open('./school/'+name+'/total.gf', 'r')#전체 별점 값 불러오기
+    if os.path.isdir('./school/'+school.name):
+        to = open('./school/'+school.name+'/total.gf', 'r')
         total = to.readline()
-        total = float(total.strip('\n'))#실수화 시키기
-        if(os.path.isfile('./school/'+name+'/'+y+m+d+'.gf')):#해당 날짜의 별점 값이 있으면
-            t = open('./school/'+name+'/'+y+m+d+'.gf', 'r')#불러오기
+        total = float(total.strip('\n'))    
+        if os.path.isfile('./school/'+school.name+'/'+y+m+d+'.gf'):
+            t = open('./school/'+school.name+'/'+y+m+d+'.gf','r')
             re = t.readline()
-            re = float(re.strip('\n'))#실수화 시키기
-            embed.set_footer(text="이 급식의 평점:"+str(re)+"  학교 전체 평점:"+str(total))#밑에다가 별점 표시
+            re = float(re.strip('\n'))
+            embed.set_footer(text='이 급식의 평점:'+str(re)+" 학교 전체 평점:"+str(total))
             t.close()
         else:
-            embed.set_footer(text="이 급식의 평점:없음  학교 전체 평점:"+str(total))#밑에다가 표시
+            embed.set_footer(text="이급식의 평점:없음  학교 전체 평점:"+str(total))
             to.close()
     else:
-        embed.set_footer(text="이 급식의 평점:없음  학교 전체 평점:없음")  # 임베드 마지막에 멘트 추가
+        embed.set_footer(text="이 급식의 평점 없음  학교 전체 평점:없음")
+    await p.delete()
+    send = await ctx.channel.send(embed=embed)  
+###############################################################################################
 
-    await p.delete()  # 출력된 메시지 지우기
-    send = await ctx.channel.send(embed=embed)  # 임베드 값 출력
-    ##여기부터 반응 관련 코드
-    if (y == str(date.year) and m == str(date.month) and d == str(date.day)) and content == 1 and datetime.today().hour >= 12:#출력일이 오늘이고 내용이 있으며 12시 이상일경우
+#################################################별점##########################################
+    if y==str(date.year) and m==str(date.month) and d==str(date.day) and content == 1 and datetime.today().hour >= 12:
         emoji = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣','❌']
         for i in range(6):
-            await send.add_reaction(emoji[i])#리액션 추가
+            await send.add_reaction(emoji[i])
 
-        def emocheck(reaction):#확인 함수
-            if (reaction.user_id == ctx.author.id and reaction.emoji.name in emoji and reaction.message_id == send.id):
-                return T  # 리액션을 추가한 유저와 명렁어 유저가 같고 리액션이 리스트에 있으며 리액션 메시지 아이이돠 임베드와 같을 경우
+        def emocheck(reaction):
+            if reaction.user_id == ctx.author.id and reaction.emoji.name in emoji and reaction.message_id == send.id:
+                return T
 
         try:
-            reaction = await client.wait_for(event='raw_reaction_add', timeout = 15,check = emocheck)#리액션 함수
+            reaction = await client.wait_for(event='raw_reaction_add', timout = 15, check = emocheck)
         except asyncio.TimeoutError:
-            await send.delete()#임베드 지우기
-            await ctx.channel.send(embed=embed)#재출력
+            await send.delete()
+            await ctx.channel.send(embed=embed)
         else:
-            if (reaction.emoji.name != '❌'):#리액션이❌가 아닐경우
-                review.review(reaction,name,y,m,d,str(ctx.author))#별점 처리
-            await send.delete()#지우기#
-            await ctx.channel.send(embed=embed)#재출력
-            
-    del author[author.index(ctx.author)]                                             #사용자 정보를 배열에서 지우기
-
-
-@client.command(name = '별칭')#별칭 기능
+            if reaction.emoji.name != '❌':
+                review.review(reaction,school.name,y,m,d,str(ctx.author))
+            await send.delete()
+            await ctx.channel.send(embed=embed)
+################################################################################################
+    del author[author.index(ctx.author)]
+    
+@client.command(name='별칭')  # 별칭 기능
 async def short(ctx, origin, new):
     '''This funtion is that shorts origin name to custom name'''
-    path = './user/'+str(ctx.author)+'/shorts/'#경로 지정
-    os.makedirs(path,exist_ok=T)#폴더 생정
-    p = open(path+str(new)+'.gf', 'w')#파일 오픈
-    p.write(str(origin))#쓰기
-    await ctx.channel.send('줄이기 성공:'+origin + '->' + new)#메세지 출력
-@short.error#줄이기 에러가 날 경우
+    path = './user/'+str(ctx.author)+'/shorts/'  # 경로 지정
+    os.makedirs(path, exist_ok=T)  # 폴더 생정
+    p = open(path+str(new)+'.gf', 'w')  # 파일 오픈
+    p.write(str(origin))  # 쓰기
+    await ctx.channel.send('줄이기 성공:'+origin + '->' + new)  # 메세지 출력
+
+
+@short.error  # 줄이기 에러가 날 경우
 async def error(ctx, error):
     await ctx.channel.send("제대로 입력해주세요")
 
-@client.event#에러가 날경우
+@급식.error
+async def error(ctx, error):
+    await ctx.channel.send("제대로 입력해주세요")
+    del author[author.index(ctx.author)]
+
+
+@client.event  # 에러가 날경우
 async def on_command_error(ctx, error):
     pass
 
 
-os.makedirs('./school', exist_ok=T)#폴더 만들기  
-os.makedirs('./user',exist_ok=T)#폴더 만들기
-client.run(token)                                                        #token 값을 가진 봇을 구동
+os.makedirs('./school', exist_ok=T)  # 폴더 만들기
+os.makedirs('./user', exist_ok=T)  # 폴더 만들기
+client.run(token)  # token 값을 가진 봇을 구동
