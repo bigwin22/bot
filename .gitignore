@@ -1,5 +1,5 @@
 .vscode/
-.module/__pycache
+module/__pycache__/
 school
 user
 venv
@@ -10,3 +10,4 @@ test.py
 school basic info json.json
 workspace.code-workspace.code-workspace
 token.token
+workspace.code-workspace
