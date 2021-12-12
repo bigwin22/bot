@@ -1,10 +1,11 @@
 from datetime import datetime
 
 import module.process as process
-date = datetime.today()
+date = datetime.now()
 
 class Today():
     def __init__(self,val):
+        date = datetime.now()
         if len(val) == 4:
             self.y=val[1]
             self.m=val[2]

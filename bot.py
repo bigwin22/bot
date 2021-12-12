@@ -20,7 +20,7 @@ client = commands.Bot(command_prefix='!')  # 명령어 호출 코드
 F = False
 T = True
 
-print(datetime.today())
+print(datetime.now())
 
 # 생성된 토큰을 입력해준다.
 token = open('token.token', 'r')
@@ -187,7 +187,7 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
 ###############################################################################################
 
 #################################################별점##########################################
-    if y==str(date.year) and m==str(date.month) and d==str(date.day) and content == 1 and datetime.today().hour >= 12:
+    if y==str(date.year) and m==str(date.month) and d==str(date.day) and content == 1 and datetime.now().hour >= 12:
         emoji = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣','❌']
         for i in range(6):
             await send.add_reaction(emoji[i])
