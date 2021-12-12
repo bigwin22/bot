@@ -107,6 +107,12 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
             school.school(str(f.readline()),-1)
         else:
             school.school(val[0],-1)
+        
+        if len(school.name) > 10:
+            del author[author.index(ctx.author)]
+            await p.delete()
+            await ctx.channel.send("해당하는 학교가 너무 많습니다. 좀 더 정확히 입력해주세요")
+            return
         if len(school.name) > 1:
             clist = []
             cprint = []
@@ -191,7 +197,7 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
                 return T
 
         try:
-            reaction = await client.wait_for(event='raw_reaction_add', timout = 15, check = emocheck)
+            reaction = await client.wait_for(event='raw_reaction_add', timeout = 15, check = emocheck)
         except asyncio.TimeoutError:
             await send.delete()
             await ctx.channel.send(embed=embed)
