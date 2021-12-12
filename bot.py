@@ -227,7 +227,6 @@ async def error(ctx, error):
 async def on_command_error(ctx, error):
     pass
 
-
 os.makedirs('./school', exist_ok=T)  # 폴더 만들기
 os.makedirs('./user', exist_ok=T)  # 폴더 만들기
 client.run(token)  # token 값을 가진 봇을 구동
