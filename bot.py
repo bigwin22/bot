@@ -3,14 +3,14 @@ import discord
 from datetime import datetime
 from discord.client import Client
 from discord.ext import commands
-import requests
-import json
+from pytz import timezone
 import os
 
 # 내가 만든 module
 import module.process as process  # moduel 폴더의 process 모듈을 process로 규정하여 import해라
 import module.review as review  # 이하동문
-# import 'Today' funtion in mainprocess in module folder
+import module.logger as log
+# import 'Today' Function in mainprocess in module folder
 from module.mainprocess import Today
 from module.mainprocess import School
 
@@ -20,7 +20,8 @@ client = commands.Bot(command_prefix='!')  # 명령어 호출 코드
 F = False
 T = True
 
-print(datetime.now())
+KST = timezone('Asia/Seoul')
+print(datetime.now(KST))
 
 # 생성된 토큰을 입력해준다.
 token = open('token.token', 'r')
@@ -36,39 +37,39 @@ async def on_ready():
     print(client.user.id)
     print("================")
 
-
-# 임베드 추가 함수
-
-
-def printf(title, year, month, day):
-    # 임메드 값 추가를 return
-    return discord.Embed(title=title, description=year+' '+month+' '+day, color=0x62c1cc)
-
-
 author = []  # 입력한 유저의 정보 저장
 
 # 급식 명령어
-
-
 @client.command()
 async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 뒤에 붙는 값들 (ex:이름,년,월,일)
-    date = datetime.now()
+    # 임베드 추가 함수
+    def printf(title, year, month, day):
+        # 임메드 값 추가를 return
+        return discord.Embed(title=title, description=year+' '+month+' '+day, color=0x62c1cc)
+
+    log.entered(str(ctx.author),val,str(ctx.author))
+    log.fstarting('command Func', str(ctx.author))
+    date = datetime.now(KST)
 ##################################################처리 시작 코드#######################
+    log.fstarting('start code',str(ctx.author))
     fpath = "./user/"+str(ctx.author)
     os.makedirs(fpath, exist_ok=T)  # fpath 경로에 폴더가 존재하지 않을 시 생성
     os.makedirs(fpath+'/review', exist_ok=T)
 
     if (ctx.author in author):  # 같은 사람이 두 개의 이상의 값을 동시에 처리할 경우 무시
+        log.custom("User already entered", ctx.author)
         await ctx.channel.send("이미 처리 중이에요")
         return
     author.append(ctx.author)  # 유저 정보 추가
 
     p = await ctx.channel.send("처리 중입니다..........")
+    log.fend('start code',str(ctx.author))
 #######################################################################################
 
 ###################################################기본 세팅(변수,함수)##########################
+    log.fstarting('initial Func',str(ctx.author))
     school = School()
-
+    
     choice = 0 #선택지
     clist = [] #choice list 선택지
     cprint = [] #choice 출력 배열
@@ -81,9 +82,11 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
         return F
     
     store = []
+    log.fend('initial Func',str(ctx.author))
  ##################################################################################### 
 
 #######################################경우에 수에 따른 변수 값 지정#####################
+    log.fstarting('variable code',str(ctx.author))
     if len(val) == 0:
         if os.path.isfile(fpath+'/name.gf'):
             f = open(fpath+'/name.gf', 'r')
@@ -137,10 +140,12 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
                     await cprint[i].delete()
                 await a.delete()
         else:
-            school.setting(0)               
+            school.setting(0)   
+    log.fend('variable code', str(ctx.author))            
 ###################################################################################################
 
 ##############################################급식 정보###########################################
+    log.fstarting('processing code', str(ctx.author))
     today = Today(val)
     embed = printf(school.name, today.y,today.m,today.d)
     y = today.y
@@ -148,17 +153,22 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
     d = today.d
 
     for i in range(3):
+        log.fstarting('process Func',str(ctx.author))
         store.append(process.food(school.area,school.code,i+1,y+m+d))
+        log.fend('process Func', str(ctx.author))
+    log.custom(f"Value of variable of 'store' is {store}",str(ctx.author))
     f = open(fpath+"/name.gf", 'w')
-    f.write(school.name)
+    f.write(school.name)    
     f.close()
 
     f = open(fpath+"/code.gf",'w')
     f.write(school.area+school.code)
     f.close()
+    log.fend('processing code',str(ctx.author))
 ##################################################################################################
 
 ######################################급식 정보 출력##################################################
+    log.fstarting('print code', str(ctx.author))
     when = ['아침','점심','저녁']
     content = 0
     for i in range(3):
@@ -183,11 +193,13 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
     else:
         embed.set_footer(text="이 급식의 평점 없음  학교 전체 평점:없음")
     await p.delete()
-    send = await ctx.channel.send(embed=embed)  
+    send = await ctx.channel.send(embed=embed) 
+    log.fend('print code', str(ctx.author))
 ###############################################################################################
 
 #################################################별점##########################################
-    if y==str(date.year) and m==str(date.month) and d==str(date.day) and content == 1 and datetime.now().hour >= 12:
+    log.fstarting('review code',str(ctx.author))
+    if y==str(date.year) and m==str(date.month) and d==str(date.day) and content == 1 and datetime.now(KST).hour >= 12:
         emoji = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣','❌']
         for i in range(6):
             await send.add_reaction(emoji[i])
@@ -206,12 +218,14 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
                 review.review(reaction,school.name,y,m,d,str(ctx.author))
             await send.delete()
             await ctx.channel.send(embed=embed)
+    log.fend('review code',str(ctx.author))
 ################################################################################################
     del author[author.index(ctx.author)]
-    
+    log.fend('command Func', str(ctx.author))
+
 @client.command(name='별칭')  # 별칭 기능
 async def short(ctx, origin, new):
-    '''This funtion is that shorts origin name to custom name'''
+    '''This Function is that shorts origin name to custom name'''
     path = './user/'+str(ctx.author)+'/shorts/'  # 경로 지정
     os.makedirs(path, exist_ok=T)  # 폴더 생정
     p = open(path+str(new)+'.gf', 'w')  # 파일 오픈
@@ -226,6 +240,7 @@ async def error(ctx, error):
 @급식.error
 async def error(ctx, error):
     await ctx.channel.send("제대로 입력해주세요")
+    print(error)
     del author[author.index(ctx.author)]
 
 
