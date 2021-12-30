@@ -4,50 +4,48 @@ import time
 import os.path
 
 KST = timezone('Asia/Seoul')
-
-start = datetime.now(KST)
 today = str(datetime.now(KST))
 today = today.replace(':','#')
 print(datetime.now(KST))
-################Initial setting################
-if os.path.exists(f'./log/log({today}).log') == False:
-    x = open(f'./log/log({today}).log', 'w')
+################초기 설정################
+if os.path.exists(f'./log/log({today}).log') == False:#실행 날짜의 로그 파일이 없으면
+    x = open(f'./log/log({today}).log', 'w')#파일 생성
     x.close()
 x = open(f'./log/log({today}).log', 'r')
 p = x.readline()
-if p == '':
+if p == '':#파일 내용에 아무 것도 없으면 날짜선 추가
     x.close()
     x = open(f'./log/log({today}).log', 'a')
     x.write(f'##############{datetime.now(KST)}##############\n')
     x.close()
-elif p[16] != datetime.now(KST)[15]:
+elif p[16] != datetime.now(KST)[15]:#읽어드리고 현재 날짜와 기록된 날짜가 다르면
     x.close()
     x = open(f'./log/log({today}).log', 'a')
-    x.write(f'\n##############{datetime.now(KST)}##############\n')
+    x.write(f'\n##############{datetime.now(KST)}##############\n')#날자선 추가
     x.close()
 ###############################################
     
 
-pt = time.time()##processing time
+pt = time.time()##처리 시간
 def fstarting(name,tag):
-    """This Function records when the'Function' stared"""
+    """이 함수는 함수의 시작 시간을 기록합니다."""
     f = open(f'./log/log({today}).log', 'a')
     global pt
     t = datetime.now(KST)
     pt = time.time()
-    f.write(f"[{t}]: Function'{name}' has begun(tag:{tag})\n")
+    f.write(f"[{t}]: 함수'{name}'(이)가 시작됨(tag:{tag})\n")
     f.close()
 def fend(name,tag):
-    """This Function records when the'Function' started"""
+    """이 함수는 함수의 처리 완료 시간을 기록합니다."""
     f = open(f'./log/log({today}).log', 'a')
     t = datetime.now(KST)
-    f.write(f"[{t}]: Function'{name}' is done/Processing time:{str(time.time()-pt)}(tag:{tag})\n")
+    f.write(f"[{t}]: 함수'{name}'(이)가 끝남/처리 시간:{str(time.time()-pt)}(tag:{tag})\n")
     f.close()
 
 
 
 def entered(user,val,tag):
-    """This Function records when it was entered"""
+    """이 함수는 언제 어떤 값이 입력되었는지를 기록합니다."""
     f = open(f'./log/log({today}).log','a')
     t = datetime.now(KST)
     f.write(f"[{t}]: {user} entered {val}(tag:{tag})\n")
@@ -55,7 +53,7 @@ def entered(user,val,tag):
     
 
 def custom(msg, tag):
-    """This Function records custom log message"""
+    """이 함수는 커스텀 메시지를 기록합니다."""
     f = open(f'./log/log({today}).log','a')
     t = datetime.now(KST)
     f.write(f"[{t}]: {msg}({tag})\n")

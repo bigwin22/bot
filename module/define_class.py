@@ -1,6 +1,6 @@
 from datetime import datetime
 
-import module.process as process
+import School as school
 date = datetime.now()
 
 class Today():
@@ -20,10 +20,10 @@ class Today():
             self.d = str(date.day)
 class School():
     def school(self, name,num):
-        self.name = process.basic(name, 'SCHUL_NM',num)
-        self.add = process.basic(name, 'ORG_RDNMA', num)
-        self.area = process.basic(name, 'ATPT_OFCDC_SC_CODE',num)
-        self.code = process.basic(name, 'SD_SCHUL_CODE', num)
+        self.name = school.basic(name, 'SCHUL_NM',num)
+        self.add = school.basic(name, 'ORG_RDNMA', num)
+        self.area = school.basic(name, 'ATPT_OFCDC_SC_CODE',num)
+        self.code = school.basic(name, 'SD_SCHUL_CODE', num)
     def setting(self,num):
         self.name = self.name[num]
         self.add = self.add[num]
