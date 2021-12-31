@@ -10,8 +10,8 @@ import os
 import module.School as Sinfo  #학교 기본 정보
 import module.review as review #리뷰 기능 모듈
 import module.logger as log    #로그 작성 모듈
-from define_class import Today #오늘 날짜 정보 클래스
-from define_class import School#학교 정보 클래스
+from module.define_class import Today #오늘 날짜 정보 클래스
+from module.define_class import School#학교 정보 클래스
 
 # 학교코드:7041189
 
@@ -227,14 +227,14 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
 @client.command(name='별칭')  # 별칭 기능
 async def short(ctx, origin, new):
     '''이 함수는 학교 이름을 유저가 원하는 이름으로 바꿔줍니다.'''
-    log.entered(ctx.author,(origin,new))
+    log.entered(ctx.author,(origin,new),ctx.author)
     log.fstarting('short',ctx.author)
     path = './user/'+str(ctx.author)+'/shorts/'  # 경로 지정
     os.makedirs(path, exist_ok=T)  # 폴더 생정
     p = open(path+str(new)+'.gf', 'w')  # 파일 오픈
     p.write(str(origin))  # 쓰기
     await ctx.channel.send('줄이기 성공:'+origin + '->' + new)  # 메세지 출력
-    log.custom('줄이기 성공:'+origin + '->' + new,ctx.author)
+    log.custom(f'줄이기 성공:{origin} -> {new}',ctx.author)
     log.fend('short',ctx.author)
 
 

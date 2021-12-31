@@ -1,6 +1,6 @@
 from datetime import datetime
 
-import School as school
+import module.School as school
 date = datetime.now()
 
 class Today():
