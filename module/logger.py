@@ -2,11 +2,12 @@ from datetime import datetime
 from pytz import timezone
 import time
 import os.path
+import os
 
 KST = timezone('Asia/Seoul')
 today = str(datetime.now(KST))
 today = today.replace(':','#')
-print(datetime.now(KST))
+os.makedirs('./log',exist_ok=True)
 ################초기 설정################
 if os.path.exists(f'./log/log({today}).log') == False:#실행 날짜의 로그 파일이 없으면
     x = open(f'./log/log({today}).log', 'w')#파일 생성

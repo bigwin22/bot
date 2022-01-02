@@ -3,6 +3,7 @@ import discord
 from datetime import datetime
 from discord.client import Client
 from discord.ext import commands
+from discord.ext.commands.converter import EmojiConverter
 from pytz import timezone
 import os
 
@@ -26,9 +27,16 @@ print(datetime.now(KST))
 token = open('token.token', 'r')
 token = str(token.readline())
 
+c = open('command.txt','r',encoding='utf-8')
+command = []
+while T:
+    command.append(c.readline()[0:-1])
+    if not command[-1]:
+        del command[-1]
+        break   
+c.close()
+
 # 봇이 구동되었을 때 보여지는 코드
-
-
 @client.event
 async def on_ready():
     '''봇이 준비 되었을 때'''
@@ -237,7 +245,6 @@ async def short(ctx, origin, new):
     log.custom(f'줄이기 성공:{origin} -> {new}',ctx.author)
     log.fend('short',ctx.author)
 
-
 @short.error  # 줄이기 에러가 날 경우
 async def error(ctx, error):
     await ctx.channel.send("제대로 입력해주세요")
@@ -254,6 +261,58 @@ async def error(ctx, error):
 async def on_command_error(ctx, error):
     pass
 
+@client.event
+async def on_message(message):
+    if (message.author.bot):
+        return
+    content = str(message.content.split()[0])
+    if content in command:
+        if os.path.isfile(f'./personal_info/{message.author}.uf') == F:
+            try:
+                msg = await message.author.send("봇 이용을 위해 개인정보 수집 동의를 해주세요\n수집 내용:`명령어 입력 내용 및 출력 값, 유저 고유 번호`\n :o:를 누르면 동의로 간주됩니다.")
+                id = msg.id
+            except:
+                pass
+
+            try:
+                await msg.add_reaction('⭕')
+            except:
+                pass
+            try:
+                await msg.add_reaction('❌')
+            except:
+                pass
+
+            def emocheck(reaction):
+                if reaction.user_id == message.author.id and reaction.message_id == id:
+                    return T
+            try:
+                reaction = await client.wait_for(event='raw_reaction_add', timeout = 135, check = emocheck)
+            except asyncio.TimeoutError:
+                try:
+                    await message.author.send("시간 초과 입니다.")
+                except:
+                    pass
+                return
+            else:
+                if reaction.emoji.name == '❌':
+                    try:
+                        await message.author.send('개인정보 수집 이용을 거부하셨습니다.')
+                    except:
+                        pass
+                    return
+                elif reaction.emoji.name == '⭕':
+                    try:
+                        await message.author.send("개인정보 수집 이용에 동의하셨습니다.")
+                    except:
+                        pass
+                    f = open(f'./personal_info/{message.author}.uf', 'w')
+                    f.close()
+        await client.process_commands(message)
+    
+    
+    
 os.makedirs('./school', exist_ok=T)  # 폴더 만들기
 os.makedirs('./user', exist_ok=T)  # 폴더 만들기
+os.makedirs('./personal_info',exist_ok=T)
 client.run(token)  # token 값을 가진 봇을 구동
