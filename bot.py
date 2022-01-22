@@ -1,4 +1,5 @@
 import asyncio
+from pydoc import describe
 import discord
 from datetime import datetime
 from discord.client import Client
@@ -14,7 +15,7 @@ import module.logger as log    #로그 작성 모듈
 from module.define_class import Today #오늘 날짜 정보 클래스
 from module.define_class import School#학교 정보 클래스
 
-# 학교코드:7041189
+#봇 초대 코드: https://discord.com/api/oauth2/authorize?client_id=773443225427640320&permissions=3072&scope=bot
 
 client = commands.Bot(command_prefix='!')  # 명령어 호출 코드
 F = False
@@ -44,6 +45,8 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print("================")
+    await client.change_presence(status=discord.Status.online)
+    await client.change_presence(activity=discord.Game(name='!도움'))
 
 author = []  # 입력한 유저의 정보 저장
 
@@ -232,6 +235,40 @@ async def 급식(ctx, *val):  # ctx:디스코드 채팅 정보, val:명령의 �
     del author[author.index(ctx.author)]
     log.fend('command Func', str(ctx.author))
 
+@client.command(name='설정')
+async def setting(ctx):
+    '''이 함수는 봇과 관련된 개인 설정을 유저가 할 수 있게 해줍니다.
+    설정 (개인정보 지우기, 내 학교 설정, )'''
+    if str(ctx.channel.type) != 'private':
+        p = await ctx.channel.send("설정은 개인 DM으로 해주세요")
+        return
+    embed=discord.Embed(title='급식봇 설정', description='급식봇 설정입니다.', color=0xe3ca26)
+    set_arr = []
+    set_arr.append(embed.add_field(name='1.개인정보 설정',value='개인 기록을 설정합니다.', inline=True))
+    set_arr.append(embed.add_field(name='2.내 학교 설정',value='내 학교를 등록합니다.', inline=True))
+    send = await ctx.channel.send(embed=embed)
+
+    number = ['1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟']
+    for i in range(len(set_arr)):
+        await send.add_reaction(number[i])
+    
+    def emocheck(reaction):
+        if reaction.user_id == ctx.author.id and reaction.message_id == send.id:
+            return T
+    try:
+        reaction = await client.wait_for('raw_reaction_add', timeout = 15, check = emocheck)
+    except asyncio.TimeoutError:
+        await ctx.send("시간 초과입니다.")
+    else:
+        print(1)
+
+
+
+
+
+    
+    
+
 @client.command(name='별칭')  # 별칭 기능
 async def short(ctx, origin, new):
     '''이 함수는 학교 이름을 유저가 원하는 이름으로 바꿔줍니다.'''
@@ -259,6 +296,7 @@ async def error(ctx, error):
 
 @client.event  # 에러가 날경우
 async def on_command_error(ctx, error):
+    print(error)
     pass
 
 @client.event
@@ -287,7 +325,7 @@ async def on_message(message):
                 if reaction.user_id == message.author.id and reaction.message_id == id:
                     return T
             try:
-                reaction = await client.wait_for(event='raw_reaction_add', timeout = 135, check = emocheck)
+                reaction = await client.wait_for(event='raw_reaction_add', timeout = 15, check = emocheck)
             except asyncio.TimeoutError:
                 try:
                     await message.author.send("시간 초과 입니다.")
@@ -307,6 +345,7 @@ async def on_message(message):
                     except:
                         pass
                     f = open(f'./personal_info/{message.author}.uf', 'w')
+                    f.write(datetime.now(KST))
                     f.close()
         await client.process_commands(message)
     
