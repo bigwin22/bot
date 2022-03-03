@@ -1,4 +1,5 @@
 from datetime import datetime
+from pickle import TRUE
 from pytz import timezone
 import time
 import os.path
@@ -59,4 +60,3 @@ def custom(msg, tag):
     t = datetime.now(KST)
     f.write(f"[{t}]: {msg}({tag})\n")
     f.close()
-

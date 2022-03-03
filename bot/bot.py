@@ -345,7 +345,7 @@ async def on_message(message):
                     except:
                         pass
                     f = open(f'./personal_info/{message.author}.uf', 'w')
-                    f.write(datetime.now(KST))
+                    f.write(str(datetime.now(KST)))
                     f.close()
         await client.process_commands(message)
     
